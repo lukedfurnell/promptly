@@ -152,4 +152,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 # ✅ Summary
 
-**Promptly** is a CLI tool to improve and refine your prompts to get the most out of your AI-powered IDEs.
+**Promptly** is a CLI tool to improve, refine and grade prompts. It helps developers get better responses from their AI-powered IDEs by allowing them to improve their prompts on the command line.
