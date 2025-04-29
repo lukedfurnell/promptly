@@ -14,11 +14,11 @@ previous prompt that they want to refine.
 
 
 <Inputs>
-***Previous prompt that was produced by the model:  {user_prompt}***
+***User's original input (the first prompt that they want improved by the model):  {user_prompt}***
 ***The contents of the file as context:{contents}***
 ***How verbose they want the meta prompt to be: {verboseness}***
-***Refinemenet instructions provided by the user: {extra}***
-***Previous prompt that was produced by the model:  {previous_prompt}***
+***Refinemenet instructions provided by the user. This should be used to refine the 'previous_prompt' and improve it: {extra}***
+***Previous prompt that was refined and produced by the model:  {previous_prompt}***
 </Inputs>
 
 <Instructions>

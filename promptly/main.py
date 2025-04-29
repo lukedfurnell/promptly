@@ -161,9 +161,9 @@ def main():
             if ans == "y":
                 extra = input("  Enter refinement instructions:\n> ").strip()
                 # Re-run the LLM call with those extra instructions appended
-                meta_template = grab_meta_prompt(file_content, verboseness, extra, previous_prompt)
+                meta_template = grab_meta_prompt(file_content, verboseness, user_prompt, extra, previous_prompt)
 
-                print("\n==== META PROMPT ====\n", meta_template)
+                #print("\n==== META PROMPT ====\n", meta_template)
                 
                 improved = meta_prompt(client, meta_template, user_prompt)
 
