@@ -124,3 +124,17 @@ You are working with a React application file that sets up routing, SEO handling
 Return only the revised, refactored code. Briefly annotate any major structural or design changes at the top of the file in comments.
 </ImprovedPrompt>
 
+## Prompt at 2025-04-29 10:14:21
+
+<ImprovedPrompt>
+Given the provided React application code, rewrite the following prompt to be clear, explicit, and structured for optimal LLM understanding. Ensure the improved prompt references relevant details from the code context. Keep the instructions concise.
+
+Original prompt:  
+"rewrite this prompt"
+
+Instructions:
+- Clarify the request by explicitly stating what should be rewritten (e.g., the purpose or type of the prompt).
+- Reference the code context if relevant.
+- Make the revised prompt unambiguous and direct.
+</ImprovedPrompt>
+

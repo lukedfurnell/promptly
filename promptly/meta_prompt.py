@@ -10,10 +10,12 @@ You will be given the following inputs that are from the user in the <Inputs> ta
 The user will optionally be given the ability to refine the prompt - if they decide to refine the prompt then we will pass in their refine instructions in the 'extra' curly braces and we will pass in the previous prompt that they want to refine as context. Each time we pass in 'previous_prompt' this just means it's the
 previous prompt that they want to refine.
 
+The
+
 <Inputs>
 ***The contents of the file as context:{contents}***
 ***How verbose they want the meta prompt to be: {verboseness}***
-***Refinemenet instructions provided by the user;: {extra}***
+***Refinemenet instructions provided by the user: {extra}***
 ***Previous prompt that was produced by the model:  {previous_prompt}***
 </Inputs>
 
@@ -30,6 +32,38 @@ When you're ready, return the final output wrapped in these tags:
 
 <ImprovedPrompt>
 [your refined prompt goes here]
+</ImprovedPrompt>
+
+Here's an example of what an Improved Prompt looks like. We don't want to reference their original prompt in there new prompt for example:
+
+<ImprovedPrompt>
+Refactor the provided React application file to improve its code structure, readability, and maintainability. Follow these guidelines:
+
+1. **General Code Quality**
+   - Remove redundancies and unused code or imports.
+   - Group related imports together logically.
+   - Ensure component names follow conventions (e.g., PascalCase).
+   - Add concise comments to clarify non-obvious sections.
+
+2. **Component Structure & Organization**
+   - Split large or complex components into smaller, reusable components if appropriate.
+   - Move inline functions or handlers out of the render method where applicable.
+   - Ensure that logic and UI concerns are separated cleanly.
+
+3. **Best Practices**
+   - Use explicit and descriptive prop names.
+   - Replace any deprecated React patterns with modern alternatives.
+   - Ensure hooks (such as useEffect and useState) are used correctly.
+   - Optimize for readability and maintainability.
+
+4. **SEO and Routing**
+   - Ensure SEO-related features (Helmet/SEOWrapper) are consistently used.
+   - Verify that route structures are clear and canonical URLs are correctly constructed.
+
+**Context:**  
+You are working with a React application file that sets up routing, SEO handling, Google Analytics, and renders various pages for a running club discovery site.
+
+Return only the revised, refactored code. Briefly annotate any major structural or design changes at the top of the file in comments.
 </ImprovedPrompt>
 
 **Guiding Principles**:

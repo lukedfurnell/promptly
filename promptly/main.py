@@ -15,7 +15,7 @@ def load_api_key():
         if not api_key:
             sys.stderr.write(
                 "Error: OPENAI_API_KEY not set.\n"
-                "Please run: export OPENAI_API_KEY=\"sk-...\"\n"
+                "Please run: export OPENAI_API_KEY=\"your_api_key\"\n"
             )
             sys.exit(1)
 
@@ -24,36 +24,80 @@ def load_api_key():
 def get_user_inputs():
 
         user_prompt      = input("  Prompt:\n> ").strip().lower()
-        file_name_prompt = input("  Context:\n> ").strip().lower()
-        verboseness      = input("  Verboseness:\n> ").strip().lower()
+        file_name_prompt = input("  Context:\n> ").strip()
+        
+        valid_verbosity_levels = ["low", "medium", "high"]
+        verboseness = ""
+        while verboseness not in valid_verbosity_levels:
+            verboseness = input("  Verboseness (low/medium/high):\n> ").strip().lower()
+            if verboseness not in valid_verbosity_levels:
+                print("  Please enter a valid verbosity level: low, medium, or high")
 
         return user_prompt, file_name_prompt, verboseness
 
-#find file based on prompt using path lib's lib, if that fails search for the file using glob. Exit the program if no file found 
-
 def find_file(file_name_prompt):
 
-        cwd = Path.cwd()
+    cwd = Path.cwd().resolve()
 
-        file_path = cwd / file_name_prompt
+    # Try direct file path first (atomic operation)
+    try:
+        potential_path = cwd / file_name_prompt
+        file_path = potential_path.resolve(strict=False)
 
-        if file_path.is_file():
-            return file_path
-
-        file_path = next(cwd.rglob(file_name_prompt), None)
-
-        if not file_path or not file_path.is_file():
-
-            sys.stderr.write(f"Error: File not found: {file_name_prompt}\n")
+        # Ensure the resolved path is within the working directory
+        if not str(file_path).startswith(str(cwd)):
+            sys.stderr.write("Error: Access denied to file outside working directory\n")
             sys.exit(1)
 
-        return file_path
+        # Check if it's a file within a single atomic block
+        if file_path.is_file():
+            return file_path
+        
+    except (ValueError, OSError) as e:
+        sys.stderr.write(f"Error processing file path: {e}\n")
+        sys.exit(1)
+
+    # Try glob pattern with timeout protection
+    try:
+        # Convert dangerous glob patterns to safer versions
+        safe_pattern = file_name_prompt.replace('*', '[*]').replace('?', '[?]')
+        if safe_pattern != file_name_prompt:
+            # If pattern was modified, it contained potentially unsafe wildcards
+            file_path = next(cwd.glob(safe_pattern), None)
+        else:
+            # Original pattern was safe, proceed with glob but limit search depth
+            max_depth = 5
+            file_path = None
+
+            for depth in range(1, max_depth + 1):
+                pattern = "*/" * (depth - 1) + file_name_prompt
+                file_path = next(cwd.glob(pattern), None)
+                if file_path:
+                    break
+
+            if file_path:
+                safe_path = file_path.resolve(strict=False)
+
+                # Ensure the found path is within the working directory
+                if not str(safe_path).startswith(str(cwd)):
+                    sys.stderr.write("Error: Access denied to file outside working directory\n")
+                    sys.exit(1)
+
+                if safe_path.is_file():
+                    return safe_path
+                
+    except (ValueError, OSError) as e:
+        sys.stderr.write(f"Error with glob pattern: {e}\n")
+        sys.exit(1)
+
+    sys.stderr.write(f"Error: File not found: {file_name_prompt}\n")
+    sys.exit(1)
 
 def read_file(file_path):
-    
-        contents = file_path.read_text()
 
-        return contents
+    contents = file_path.read_text()
+
+    return contents
 
 def meta_prompt(client, filled_prompt, user_prompt):
 
@@ -112,7 +156,7 @@ def main():
         previous_prompt = improved
 
         while True:
-            ans = input("Refine this prompt? (y/N): ").strip().lower()
+            ans = input("Refine this prompt? (y/n): ").strip().lower()
             if ans == "y":
                 extra = input("  Enter refinement instructions:\n> ").strip()
                 # Re-run the LLM call with those extra instructions appended
@@ -135,7 +179,7 @@ def main():
         prompts_md(improved)
         print("Saved this prompt to prompts.md\n")
 
-        if input("Run another prompt? (y/N): ").strip().lower() != "y":
+        if input("Run another prompt? (y/n): ").strip().lower() != "y":
             break
 
 if __name__ == "__main__":

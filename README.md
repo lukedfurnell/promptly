@@ -13,7 +13,7 @@ It allows you to generate, refine, and grade prompts based on a context file —
 - ✍️ Iteratively refine prompts with additional instructions.
 - 📄 Save all improved prompts automatically to a `prompts.md` file in your current working directory.
 - 📊 Built-in grading system to evaluate prompt quality.
-- 🔍 Context-based prompting: supply any `.txt` file with background information.
+- 🔍 Context-based prompting: supply any any file in your current working directory as context for the model.
 
 ---
 
@@ -63,9 +63,9 @@ promptly
 
 You’ll be guided through:
 1. **Entering a base prompt** you want to improve.
-2. **Selecting a context file** (e.g., `background.txt`).
-3. **Choosing verbosity** (low, medium, or high detail).
-4. **Refining** the improved prompt based on further feedback.
+2. **Selecting a context file** (e.g., `background.txt`). For now, the casing for the file needs to exactly match. Soon we will match files even if the casing is not exactly correct.
+3. **Choosing verbosity** ('low', 'medium', or 'high' detail).
+4. **Refining** allows you to refine the prompt further instructions. Once you're finished refining, the prompt will be graded versus the first prompt you entered in the program.
 5. **Grading** and saving the final prompt to `prompts.md`.
 
 ---
@@ -152,4 +152,4 @@ This project is licensed under the [MIT License](LICENSE).
 
 # ✅ Summary
 
-**Promptly** makes it easy to rapidly generate, refine, and save better prompts — all from your terminal.
+**Promptly** is a CLI tool to improve and refine your prompts to get the most out of your AI-powered IDEs.
