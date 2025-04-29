@@ -7,6 +7,12 @@ It allows you to generate, refine, and grade prompts based on a context file —
 
 ---
 
+# ✅ Summary
+
+**Promptly** is a CLI tool to improve, refine and grade prompts. It helps developers get better responses from their AI-powered IDEs by allowing them to improve their prompts on the command line.
+
+---
+
 ## ✨ Features
 
 - 🛠 Generate meta-prompts using context documents.
@@ -147,9 +153,3 @@ pip install openai python-dotenv
 ## 📜 License
 
 This project is licensed under the [MIT License](LICENSE).
-
----
-
-# ✅ Summary
-
-**Promptly** is a CLI tool to improve, refine and grade prompts. It helps developers get better responses from their AI-powered IDEs by allowing them to improve their prompts on the command line.
