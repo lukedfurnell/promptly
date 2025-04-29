@@ -1,0 +1,8 @@
+README.md
+pyproject.toml
+promptly/promptly.egg-info/PKG-INFO
+promptly/promptly.egg-info/SOURCES.txt
+promptly/promptly.egg-info/dependency_links.txt
+promptly/promptly.egg-info/entry_points.txt
+promptly/promptly.egg-info/requires.txt
+promptly/promptly.egg-info/top_level.txt

@@ -1,0 +1,255 @@
+import React, { useState, useEffect } from "react";
+import ReactGA from "react-ga4";
+import { Helmet } from "react-helmet";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Footer from "./Components/Footer";
+import NavBar from "./Components/navbar/navbar";
+import NavyPanel from "./Components/NavyPanel";
+import { ALL_RUN_CLUB_DATA } from './assets/runClubDataIndex';
+import MediaCard from "./Components/CardComponent";
+import ClubProfile from "./Components/ClubProfile";
+import Blogs from "./Components/blogs";
+import AboutUs from "./Components/AboutUs";
+import BlogPage from "./Components/BlogPage";
+import Categories from "./Components/Categories";
+import CategoryDetail from "./Components/CategoryDetail";
+import ClaimClub from "./Components/ClaimClub";
+import Releases from "./Components/Releases";
+import Help from "./Components/Help";
+import RegionDetailPage from './pages/RegionDetailPage';
+import "./App.css";
+
+// Initialize Google Analytics with your Measurement ID
+ReactGA.initialize("G-9049ZB29CX");
+
+// This is a local version that's being replaced by the standalone component
+// Only kept for backward compatibility
+function SEOWrapper({ title, description, keywords, canonicalUrl, children }) {
+  // Process canonical URL to ensure consistency
+  let finalCanonicalUrl = canonicalUrl;
+  if (typeof canonicalUrl === 'function') {
+    finalCanonicalUrl = canonicalUrl();
+  }
+  
+  // Ensure consistent domain (www.clubsta.co)
+  if (finalCanonicalUrl && finalCanonicalUrl.includes('clubsta.co')) {
+    finalCanonicalUrl = finalCanonicalUrl.replace('clubsta.co', 'www.clubsta.co');
+  }
+
+  return (
+    <>
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta name="keywords" content={keywords} />
+        <link rel="canonical" href={finalCanonicalUrl} />
+      </Helmet>
+      {children}
+    </>
+  );
+}
+
+function HomePage({ selectedCity, setSelectedCity }) {
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleClubClick = (club) => {
+    ReactGA.event({
+      category: "User",
+      action: "Click Club",
+      label: club.title,
+    });
+  };
+
+  // Filter the clubs based on the selected city and search term
+  const filteredClubs = ALL_RUN_CLUB_DATA.filter((club) => {
+    const searchTermLower = searchTerm.trim().toLowerCase();  // Trim search term to remove leading/trailing spaces
+    const matchesCity = club.city === selectedCity;
+    const matchesSearch = (
+      club.title?.toLowerCase().includes(searchTermLower) ||
+      club.day?.some(day => day.toLowerCase().includes(searchTermLower)) ||
+      club.subtitle?.toLowerCase().includes(searchTermLower)
+    );
+
+    return matchesCity && matchesSearch;
+  });
+
+  return (
+    <div className="main-content">
+      <Helmet>
+        <title>The Best Run Clubs in {selectedCity || 'Your City'} | Clubsta</title>
+        <meta name="description" content={`Discover the best run clubs in ${selectedCity || 'your city'} with Clubsta - your ultimate run club directory. Find, join and attend a running club.`} />
+        <meta name="keywords" content={`run clubs, ${selectedCity || 'your city'}, running clubs, meet people, running groups, best clubs, new city`} />
+        {/* Only add homepage canonical when actually on homepage */}
+        {window.location.pathname === '/' && (
+          <link rel="canonical" href="https://www.clubsta.co/" />
+        )}
+      </Helmet>
+      <NavyPanel searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <Categories selectedCity={selectedCity} />
+      <div className="card-section">
+        {filteredClubs.length > 0 ? (
+          filteredClubs.map((card) => (
+            <div key={card.id} onClick={() => handleClubClick(card)}>
+              <MediaCard data={card} />
+            </div>
+          ))
+        ) : (
+          <p>No results found for your search.</p>  // Display 'No results' message
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
+  const [selectedCity, setSelectedCity] = useState('San Francisco');
+
+  useEffect(() => {
+    ReactGA.send({ hitType: "pageview", page: window.location.pathname });
+  }, []);
+
+  return (
+    <Router>
+      <div className="app-container">
+        <NavBar selectedCity={selectedCity} setSelectedCity={setSelectedCity} />
+        <main className="main-content">
+          <Routes>
+            <Route path="/" element={<HomePage selectedCity={selectedCity} setSelectedCity={setSelectedCity} />} />
+            
+            {/* Category view route */}
+            <Route path="runclubs/:city/category/:categoryName" element={
+              <SEOWrapper
+                title={`Run Club Category | Clubsta`}
+                description={`Find the best run clubs and running groups.`}
+                keywords={`run club categories, running groups`}
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <CategoryDetail />
+              </SEOWrapper>
+            } />
+            
+            {/* Club profile route */}
+            <Route path="runclubs/:city/:id" element={
+              <SEOWrapper
+                title={`Run Club Profile in ${selectedCity || 'Your City'} | Clubsta`}
+                description={`Join this running club in ${selectedCity || 'your city'}. Find your perfect running group today.`}
+                keywords={`run club profile, ${selectedCity || 'local'} running, running groups`}
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <ClubProfile />
+              </SEOWrapper>
+            } />
+
+            {/* City listing route */}
+            <Route path="/runclubs/:city" element={
+              <SEOWrapper
+                title={`Run Clubs in ${selectedCity || 'Your City'} | Clubsta`}
+                description={`Find the best ${selectedCity || 'local'} run clubs and running groups. Browse our curated list of running clubs and join a community of runners today.`}
+                keywords={`run club categories, ${selectedCity || 'local'} running, themed running groups, specialized clubs`}
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <HomePage selectedCity={selectedCity} setSelectedCity={setSelectedCity} />
+              </SEOWrapper>
+            } />
+
+            {/* Legacy route for backward compatibility - canonical URL points to preferred URL pattern */}
+            <Route path="club/:city/:category/:id" element={
+              <SEOWrapper
+                title={`Run Club Profile in ${selectedCity || 'Your City'} | Clubsta`}
+                description={`Join this running club in ${selectedCity || 'your city'}. Find your perfect running group today.`}
+                keywords={`run club profile, ${selectedCity || 'local'} running, running groups`}
+                canonicalUrl={(props) => {
+                  // Extract parameters from the URL
+                  const pathParts = window.location.pathname.split('/');
+                  if (pathParts.length >= 4) {
+                    const city = pathParts[2];
+                    const id = pathParts[4] || pathParts[3]; // Handle both with and without category
+                    // Return canonical URL with the preferred URL pattern
+                    return `https://www.clubsta.co/runclubs/${city}/${id}`;
+                  }
+                  return `https://www.clubsta.co${window.location.pathname}`;
+                }}
+              >
+                <ClubProfile />
+              </SEOWrapper>
+            } />
+
+            {/* Other routes */}
+            <Route path="/blogs" element={
+              <SEOWrapper
+                title="Running Blogs and Articles | Clubsta"
+                description="Read the latest running blogs and articles from Clubsta. Get tips, inspiration, and stay updated on the running scene."
+                keywords="running blogs, running articles, running tips"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <Blogs />
+              </SEOWrapper>
+            } />
+            <Route path="/blogs/:id" element={
+              <SEOWrapper
+                title="Blog Post | Clubsta"
+                description="Read this in-depth blog post about running. Get valuable insights and tips from the Clubsta community."
+                keywords="running blog post, running tips, Clubsta article"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <BlogPage />
+              </SEOWrapper>
+            } />
+            <Route path="/aboutus" element={
+              <SEOWrapper
+                title="About Clubsta | Your Run Club Directory"
+                description="Learn about Clubsta, your go-to directory for run clubs. Discover our mission to connect runners and build communities."
+                keywords="about Clubsta, run clubs, running community, club directory"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <AboutUs />
+              </SEOWrapper>
+            } />
+            <Route path="/claimclub" element={
+              <SEOWrapper
+                title="Claim Your Running Club | Clubsta"
+                description="Are you a run club creator? Claim your club on Clubsta and reach more runners!"
+                keywords="claim run club, club organizer, promote running club"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <ClaimClub />
+              </SEOWrapper>
+            } />
+            <Route path="/releases" element={
+              <SEOWrapper
+                title="New Releases | Clubsta"
+                description="Stay up to date with the latest releases and updates from Clubsta. Discover new features to enhance your run club experience."
+                keywords="Clubsta releases, new features, run club updates"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <Releases />
+              </SEOWrapper>
+            } />
+            <Route path="/help" element={
+              <SEOWrapper
+                title="Help Center | Clubsta"
+                description="Need assistance with Clubsta? Find answers to common questions and learn how to make the most of your run club directory."
+                keywords="Clubsta help, FAQs, run club assistance, user guide"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <Help />
+              </SEOWrapper>
+            } />
+            <Route path="runclub/region/:region" element={
+              <SEOWrapper
+                title="Running Clubs by Region - Find Local Running Groups | Clubsta"
+                description="Discover running clubs and groups in your area. Join local running communities and find the perfect running club for you."
+                keywords="running clubs, running groups, running communities, local running clubs"
+                canonicalUrl={`https://www.clubsta.co${window.location.pathname}`}
+              >
+                <RegionDetailPage />
+              </SEOWrapper>
+            } />
+            <Route path="*" element={<HomePage selectedCity={selectedCity} setSelectedCity={setSelectedCity} />} />
+          </Routes>
+        </main>
+        <Footer setSelectedCity={setSelectedCity} />
+      </div>
+    </Router>
+  );
+}

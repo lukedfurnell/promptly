@@ -1,0 +1,2 @@
+[console_scripts]
+promptly = promptly.main:main

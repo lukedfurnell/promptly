@@ -1,0 +1,12 @@
+README.md
+pyproject.toml
+promptly/__init__.py
+promptly/grading_prompt.py
+promptly/main.py
+promptly/meta_prompt.py
+promptly.egg-info/PKG-INFO
+promptly.egg-info/SOURCES.txt
+promptly.egg-info/dependency_links.txt
+promptly.egg-info/entry_points.txt
+promptly.egg-info/requires.txt
+promptly.egg-info/top_level.txt
