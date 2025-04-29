@@ -109,13 +109,14 @@ def meta_prompt(client, filled_prompt, user_prompt):
     
         return response.output_text
 
-def grab_meta_prompt(file_content, verboseness, extra ="", previous_prompt=""):
+def grab_meta_prompt(file_content, verboseness, user_prompt, extra ="", previous_prompt=""):
 
         filled_prompt = metaprompt.format(
             contents=file_content,
             verboseness=verboseness,
             extra=extra,
-            previous_prompt = previous_prompt
+            previous_prompt = previous_prompt,
+            user_prompt = user_prompt
         )
 
         return filled_prompt
@@ -141,9 +142,9 @@ def main():
         # Read context and build the meta‐prompt template
         file_path     = find_file(file_name_prompt)
         file_content  = read_file(file_path)
-        meta_template = grab_meta_prompt(file_content, verboseness)
+        meta_template = grab_meta_prompt(file_content, verboseness, user_prompt)
 
-        print("\n==== RAW META-PROMPT TEMPLATE ====\n", meta_template)
+        #print("\n==== RAW META-PROMPT TEMPLATE ====\n", meta_template)
 
         # 1) Generate the first improved prompt
 
@@ -156,11 +157,13 @@ def main():
         previous_prompt = improved
 
         while True:
-            ans = input("Refine this prompt? (y/n): ").strip().lower()
+            ans = input("  Refine this prompt? (y/n):\n> ").strip().lower()
             if ans == "y":
                 extra = input("  Enter refinement instructions:\n> ").strip()
                 # Re-run the LLM call with those extra instructions appended
                 meta_template = grab_meta_prompt(file_content, verboseness, extra, previous_prompt)
+
+                print("\n==== META PROMPT ====\n", meta_template)
                 
                 improved = meta_prompt(client, meta_template, user_prompt)
 
@@ -177,9 +180,9 @@ def main():
         print("\n==== GRADE TABLE ====\n", grade)
 
         prompts_md(improved)
-        print("Saved this prompt to prompts.md\n")
+        print("\nSaved this prompt to prompts.md\n")
 
-        if input("Run another prompt? (y/n): ").strip().lower() != "y":
+        if input("Run another prompt? (y/n):\n> ").strip().lower() != "y":
             break
 
 if __name__ == "__main__":
