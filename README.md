@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 **Promptly** is a lightweight command-line tool for improving prompts for OpenAI models.  
-It allows you to generate, refine, and grade prompts based on a context file — and automatically save your work into a Markdown file.
+It allows you to generate, refine, and grade better prompts based on a context file — and automatically save your work into a Markdown file.
 
 ---
 
@@ -56,7 +56,6 @@ git clone https://github.com/yourusername/promptly.git
 cd promptly
 pip install .
 ```
-
 ---
 
 ## 🛠 Usage
@@ -68,11 +67,11 @@ promptly
 ```
 
 You’ll be guided through:
-1. **Entering a base prompt** you want to improve.
+1. **Entering a base prompt** you want to improve. The program will take this prompt and append a prompt to improve the base prompt.
 2. **Selecting a context file** (e.g., `background.txt`). For now, the casing for the file needs to exactly match. Soon we will match files even if the casing is not exactly correct.
-3. **Choosing verbosity** ('low', 'medium', or 'high' detail).
-4. **Refining** allows you to refine the prompt further instructions. Once you're finished refining, the prompt will be graded versus the first prompt you entered in the program.
-5. **Grading** and saving the final prompt to `prompts.md`.
+3. **Choosing verbosity** ('low', 'medium', or 'high' detail). This specifies how detailed and long you want the meta-prompt to be that is produced by OpenAI.
+4. **Refining** allows you to refine the prompt with further instructions. Once you're finished refining, the prompt will be graded versus the first prompt you entered in the program.
+5. **Grading** allows you to grade the prompt vs. the original and save the final prompt to `prompts.md`.
 
 ---
 
@@ -88,13 +87,9 @@ Context:
 Verboseness:
 > medium
 
-==== RAW META-PROMPT TEMPLATE ====
-
-...
-
 ==== IMPROVED PROMPT ====
 
-...
+...This will contain the improved prompt.
 
 Refine this prompt? (y/N):
 > y
@@ -114,8 +109,6 @@ Each final prompt is appended into a local `prompts.md` file with a timestamp.
 
 ```markdown
 ## Prompt at 2024-04-27 10:32:12
-
-Summarize the main points of the article in a concise, bulleted format.
 ```
 
 ---
@@ -142,11 +135,10 @@ promptly/
 - `openai`
 - `python-dotenv`
 
-Install them manually:
+You can install the required OpenAI packages with:
 
 ```bash
 pip install openai python-dotenv
-```
 
 ---
 
